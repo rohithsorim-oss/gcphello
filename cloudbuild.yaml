@@ -1,0 +1,4 @@
+steps:
+  - name: 'gradle:8.5-jdk17'
+    entrypoint: './gradlew'
+    args: ['build']

@@ -1,7 +1,7 @@
 steps:
   - name: 'gradle:8.5-jdk17'
-    entrypoint: './gradlew'
-    args: ['build']
+    entrypoint: 'bash'
+    args: ['-c', 'chmod +x ./gradlew && ./gradlew build']
 
 options:
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

@@ -1,5 +1,5 @@
 steps:
-  # Build the app
+  # Gradle Build the app
   - name: 'gradle:9.7.1-jdk21'
     entrypoint: 'bash'
     args: ['-c', 'chmod +x ./gradlew && ./gradlew build']

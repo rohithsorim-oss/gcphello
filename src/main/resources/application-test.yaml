@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: gcphello
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.rohith.gcphello: INFO

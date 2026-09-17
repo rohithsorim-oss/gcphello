@@ -47,7 +47,7 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--set-env-vars'
-      - 'SPRING_PROFILES_ACTIVE=$_ENV,BUILD_NUMBER=$(cat /workspace/build-number.txt)'
+      - 'SPRING_PROFILES_ACTIVE=$_ENV,APP_BUILD_NUMBER=$(cat /workspace/build-number.txt)'
 
 substitutions:
   _ENV: 'dev'

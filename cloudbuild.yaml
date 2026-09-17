@@ -11,7 +11,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/gcphello:$BUILD_ID']
 
-  # Deploy to Cloud Run (dev/test/prod environment)
+  # Deploy to Cloud Run (dev/test/prod environments)
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'

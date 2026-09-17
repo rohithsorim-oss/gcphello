@@ -1,37 +1,15 @@
 steps:
-  # Get next build number from Cloud Storage
-  - name: 'gcr.io/cloud-builders/gsutil'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        if gsutil -q stat gs://$PROJECT_ID-cloudbuild-counters/gcphello-build-number.txt 2>/dev/null; then
-          gsutil cat gs://$PROJECT_ID-cloudbuild-counters/gcphello-build-number.txt > /workspace/build-number.txt
-          BUILD_NUMBER=$(cat /workspace/build-number.txt)
-          BUILD_NUMBER=$((BUILD_NUMBER + 1))
-        else
-          BUILD_NUMBER=1
-        fi
-        echo $BUILD_NUMBER > /workspace/build-number.txt
-        gsutil cp /workspace/build-number.txt gs://$PROJECT_ID-cloudbuild-counters/gcphello-build-number.txt
-
   # Build the application
   - name: 'gradle:9.7.1-jdk21'
     entrypoint: 'bash'
     args: ['-c', 'chmod +x ./gradlew && ./gradlew build']
 
-  # Build and push Docker image with sequential build number
+  # Build and push Docker image with build ID
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/gcphello:$(cat /workspace/build-number.txt)'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/gcphello:latest'
-      - '.'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/gcphello:$BUILD_ID', '-t', 'gcr.io/$PROJECT_ID/gcphello:latest', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/gcphello:$(cat /workspace/build-number.txt)']
+    args: ['push', 'gcr.io/$PROJECT_ID/gcphello:$BUILD_ID']
 
   # Deploy to Cloud Run (dev environment)
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -40,14 +18,14 @@ steps:
       - 'deploy'
       - 'gcphello-$_ENV'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/gcphello:$(cat /workspace/build-number.txt)'
+      - 'gcr.io/$PROJECT_ID/gcphello:$BUILD_ID'
       - '--region'
       - '$_REGION'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
       - '--set-env-vars'
-      - 'SPRING_PROFILES_ACTIVE=$_ENV,APP_BUILD_NUMBER=$(cat /workspace/build-number.txt)'
+      - 'SPRING_PROFILES_ACTIVE=$_ENV,APP_VERSION=$BUILD_ID'
 
 substitutions:
   _ENV: 'dev'
